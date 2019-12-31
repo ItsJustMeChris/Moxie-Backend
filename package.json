@@ -1,0 +1,18 @@
+{
+  "name": "moxie-backend",
+  "version": "1.0.0",
+  "description": "Backend for moxie. ",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ItsJustMeChris",
+  "license": "MIT",
+  "dependencies": {
+    "fastify": "^2.11.0",
+    "fastify-cors": "^3.0.0",
+    "fastify-sequelize": "^1.0.4",
+    "pg": "^7.17.0",
+    "sequelize": "^5.21.3"
+  }
+}
