@@ -1,0 +1,27 @@
+[Unit]
+Description=Moxie - Mindful Goals
+Documentation=https://github.com/ItsJustMeChris/Moxie-Backend
+After=network.target
+
+[Service]
+Environment=DBHOST=<DB-HOST>
+Environment=DBPORT=<DB-PORT>
+Environment=DBUSER=<DB-USER>
+Environment=DBNAME=<DB-NAME>
+Environment=DBPASS=<DB-PASS>
+
+Environment=SERVERPORT=<SERVER-PORT>
+
+Environment=SSLCERT=<SSL-CERT-PATH.pem>
+Environment=SSLKEY=<SSL-KEY-PATH.pem>
+Environment=SSLCHAIN=<SSL-CHAIN-PATH.pem>
+
+Environment=NODE_ENV=production
+
+Type=simple
+User=root
+ExecStart=<Node Executable> <code/app.js>
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
