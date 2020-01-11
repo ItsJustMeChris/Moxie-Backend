@@ -31,8 +31,9 @@ module.exports = async (fastify) => {
     if (!user) return { status: 'error', message: 'Failed to register' };
 
     const token = await generateToken();
-    const userSession = await SessionToken.create({ token, ip });
+    if (!token) return { message: 'Internal Error' };
 
+    const userSession = await SessionToken.create({ token, ip });
     if (!userSession) return { status: 'error', message: 'Failed to login' };
 
     await res.transaction.commit();

@@ -30,6 +30,7 @@ sequelize.import('./models/Strategy')
   .import('./models/Comment');
 
 fastify.db = sequelize;
+fastify.Sequelize = Sequelize;
 
 /* Register Routes */
 
