@@ -1,13 +1,12 @@
-const Sequelize = require('sequelize');
-
-module.exports = async (fastify) => {
-  fastify.db.define('Motivation', {
-    name: Sequelize.STRING,
-    link: Sequelize.STRING,
+module.exports = (sequelize, DataTypes) => {
+  sequelize.define('Motivation', {
+    name: DataTypes.STRING,
+    link: DataTypes.STRING,
   });
 
-  const { Motivation, Strategy } = fastify.db.models;
+  const { Motivation, Strategy } = sequelize.models;
 
   Strategy.hasMany(Motivation, { as: 'motivations' });
   Motivation.belongsTo(Strategy);
+  return sequelize;
 };

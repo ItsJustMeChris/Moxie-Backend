@@ -1,8 +1,6 @@
-const Sequelize = require('sequelize');
-
-module.exports = async (fastify) => {
-  fastify.db.define('Comment', {
-    comment: Sequelize.STRING,
+module.exports = (sequelize, DataTypes) => {
+  sequelize.define('Comment', {
+    comment: DataTypes.STRING,
   });
 
   const {
@@ -10,7 +8,7 @@ module.exports = async (fastify) => {
     User,
     Strategy,
     Status,
-  } = fastify.db.models;
+  } = sequelize.models;
 
   User.hasMany(Comment, { as: 'comments' });
   Comment.hasMany(Comment, { as: 'comments' });
@@ -21,4 +19,5 @@ module.exports = async (fastify) => {
   Comment.belongsTo(Comment);
   Comment.belongsTo(Strategy);
   Comment.belongsTo(Status);
+  return sequelize;
 };

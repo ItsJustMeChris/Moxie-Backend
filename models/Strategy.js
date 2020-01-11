@@ -1,7 +1,6 @@
-const Sequelize = require('sequelize');
-
-module.exports = async (fastify) => {
-  fastify.db.define('Strategy', {
-    name: Sequelize.STRING,
+module.exports = (sequelize, DataTypes) => {
+  sequelize.define('Strategy', {
+    name: DataTypes.STRING,
   });
+  return sequelize;
 };

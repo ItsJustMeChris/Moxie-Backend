@@ -1,4 +1,6 @@
-exports = async () => {
+const crypto = require('crypto');
+
+module.exports = async () => {
   try {
     const buffer = await new Promise((resolve, reject) => {
       crypto.randomBytes(256, (ex, buf) => {

@@ -1,44 +1,57 @@
-const fastify = require('fastify')({ logger: true });
+const fastify = require('fastify')({ logger: true, level: process.env.NODE_ENV === 'production' ? 'error' : 'info' });
+const Sequelize = require('sequelize');
 
-const fastifySequelize = require('fastify-sequelize');
+if (process.env.NODE_ENV !== 'production') {
+  fastify.log.info('Production mode not detected, loading from .env');
+  // eslint-disable-next-line global-require
+  require('dotenv').config();
+}
 
-fastify.register(fastifySequelize, {
-  host: 'localhost',
+const sequelize = new Sequelize(process.env.DBNAME, process.env.DBUSER, process.env.DBPASS, {
   username: 'dev',
-  database: 'moxie',
   password: 'dev',
+  database: 'moxie',
+  host: 'localhost',
   dialect: 'postgres',
-  instance: 'db',
-  autoConnect: true,
+  operatorsAliases: false,
 });
+
 
 fastify.register(require('fastify-cors'), { origin: '*' });
 
 /* Register Database Models */
 
-fastify.register(require('./models/Strategy'));
-fastify.register(require('./models/User'));
-fastify.register(require('./models/Goal'));
-fastify.register(require('./models/Motivation'));
-fastify.register(require('./models/Status'));
-fastify.register(require('./models/Comment'));
+sequelize.import('./models/Strategy')
+  .import('./models/SessionToken')
+  .import('./models/User')
+  .import('./models/Goal')
+  .import('./models/Motivation')
+  .import('./models/Status')
+  .import('./models/Comment');
+
+fastify.db = sequelize;
 
 /* Register Routes */
 
 fastify.register(require('./routes/user'), { prefix: '/v1/' });
-fastify.register(require('./routes/user'), { prefix: '/v1/' });
-fastify.register(require('./routes/goal'), { prefix: '/v1/' });
-fastify.register(require('./routes/motivation'), { prefix: '/v1/' });
-fastify.register(require('./routes/status'), { prefix: '/v1/' });
-fastify.register(require('./routes/strategy'), { prefix: '/v1/' });
+// fastify.register(require('./routes/user'), { prefix: '/v1/' });
+// fastify.register(require('./routes/goal'), { prefix: '/v1/' });
+// fastify.register(require('./routes/motivation'), { prefix: '/v1/' });
+// fastify.register(require('./routes/status'), { prefix: '/v1/' });
+// fastify.register(require('./routes/strategy'), { prefix: '/v1/' });
 
+fastify.setErrorHandler((error, req, res) => {
+  if (res.transaction) res.transaction.rollback();
+  fastify.log.error(error);
+  return res.type('application/json').code(500).send({ status: 'error', message: res.errorMessage || 'Server encountered an error.' });
+});
 
 const start = async () => {
   try {
     await fastify.ready();
-    await fastify.db.authenticate();
-    await fastify.db.sync();
-    await fastify.listen(3000);
+    await sequelize.authenticate();
+    await sequelize.sync();
+    await fastify.listen(process.env.SERVERPORT);
     fastify.log.info(`Server listening on ${fastify.server.address().port}`);
   } catch (err) {
     fastify.log.error(err);

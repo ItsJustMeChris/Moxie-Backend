@@ -1,14 +1,16 @@
-const Sequelize = require('sequelize');
-
-module.exports = async (fastify) => {
-  fastify.db.define('User', {
-    name: Sequelize.STRING,
-    email: { type: Sequelize.STRING, unique: true },
-    password: Sequelize.STRING,
+module.exports = (sequelize, DataTypes) => {
+  sequelize.define('User', {
+    name: DataTypes.STRING,
+    username: { type: DataTypes.STRING, unique: true },
+    email: { type: DataTypes.STRING, unique: true },
+    password: DataTypes.STRING,
   });
 
-  const { User, Strategy } = fastify.db.models;
+  const { User, SessionToken, Strategy } = sequelize.models;
 
   User.hasMany(User, { as: 'friends' });
   Strategy.belongsTo(User);
+  User.hasMany(SessionToken, { as: 'token' });
+  SessionToken.belongsTo(User);
+  return sequelize;
 };
